@@ -1,3 +1,4 @@
+#include <vector>
 #include "LLRBNode.h"
 
 template<class KeyT, class ValueT>
@@ -8,6 +9,7 @@ public:
     void Insert( KeyT key, ValueT value );
     void Delete( KeyT key );
     ValueT * Search( KeyT key ) const;
+    void Draw() const;
 private:
     void DeleteMin();
     bool isRed( LLRBNode<KeyT, ValueT> *node );
@@ -23,6 +25,8 @@ private:
     LLRBNode<KeyT, ValueT> * deleteMinHelper( LLRBNode<KeyT, ValueT> *node );
     LLRBNode<KeyT, ValueT> * getMinNode( LLRBNode<KeyT, ValueT> *node );
     LLRBNode<KeyT, ValueT> * fixUp( LLRBNode<KeyT, ValueT> *node );
+
+    void drawHelper( int level, std::vector<std::vector<std::string> > & levels, LLRBNode<KeyT, ValueT> *node) const;
 
     LLRBNode<KeyT, ValueT> * m_root;
     LLRBNode<KeyT, ValueT> * m_leaf;

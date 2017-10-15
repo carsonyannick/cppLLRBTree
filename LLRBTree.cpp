@@ -1,21 +1,21 @@
-/* #include "stdafx.h" */
 #include "LLRBTree.h"
 #define BLACK false
 #define RED true
 
-
+#include <fstream>
+#include <sstream>
 #include <iostream> 
 using namespace std;
 
 template class LLRBTree<int, int>;
 
-/* LLLRBTree<KeyT, ValueT>::LRBTree<KeyT, ValueT>() */
 template<class KeyT, class ValueT>
-/* LLRBTree<KeyT, ValueT>::LLRBTree<KeyT, ValueT>() */
-/* LLRBTree<KeyT, ValueT>() */
 LLRBTree<KeyT, ValueT>::LLRBTree()
 {
-    createNode(0,0, &m_leaf);
+    /* createNode(0,0, &m_leaf); */
+	m_leaf = new LLRBNode<KeyT, ValueT>( 0, 0 );
+    m_leaf->m_left = m_leaf;
+    m_leaf->m_right = m_leaf;
     m_root = m_leaf;
     m_count = 0;
 }
@@ -70,8 +70,65 @@ ValueT * LLRBTree<KeyT, ValueT>::Search( KeyT key ) const
 }
 
 
+template<class KeyT, class ValueT>
+void LLRBTree<KeyT, ValueT>::Draw() const
+{
+    vector<vector<string> > levels;
+    drawHelper(1, levels, m_root);
+    ofstream output;
+    output.open("output");
+
+    for(int i =0; i< levels.size(); ++i)
+    {
+        for(int j =0; j < levels[i].size(); ++j)
+        {
+            cout << levels[i][j];
+            output << levels[i][j];
+        }
+    }
+}
 
 // PRIVATE: -----------------------------------------------------------------------------
+
+template<class KeyT, class ValueT>
+void LLRBTree<KeyT, ValueT>::drawHelper( int level, vector<vector<string> > & levels, LLRBNode<KeyT, ValueT> *node) const
+{
+    stringstream ss;
+    if(levels.size() < level)
+    {
+        vector<string> tmp;
+        levels.push_back(tmp);
+        if(levels.size() != level)
+        {
+            cout << "noooooooo0000000wwwwwww!!" << endl;
+            exit(20);
+        }
+    }
+
+    ss << "//node: " << *(node)->m_key << endl;
+
+    if(node->m_left != m_leaf)
+    {
+        ss << "left: " << *(node->m_left->m_key) << endl;
+        drawHelper(level+1, levels, node->m_left);
+    }
+    else
+    {
+        ss << "left: None" << endl;
+    }
+
+    if(node->m_right != m_leaf)
+    {
+        ss << "right: " << *(node->m_right->m_key) << endl;
+        drawHelper(level+1, levels, node->m_right);
+    }
+    else
+    {
+        ss << "right: None" << endl;
+    }
+
+    levels[level-1].push_back(ss.str());
+}
 
 template<class KeyT, class ValueT>
 bool LLRBTree<KeyT, ValueT>::isRed( LLRBNode<KeyT, ValueT> *node )
@@ -104,7 +161,6 @@ LLRBNode<KeyT, ValueT> *LLRBTree<KeyT, ValueT>::insertHelper( KeyT key, ValueT v
 	{
 		m_count += 1;
 		LLRBNode<KeyT, ValueT> *newnode = 0;
-        /* newnode = new LLRBNode<KeyT, ValueT>( key, value ); */
 		createNode( key, value, &newnode );
 		return newnode;
 
