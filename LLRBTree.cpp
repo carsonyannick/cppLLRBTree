@@ -1,10 +1,11 @@
 #include "LLRBTree.h"
-#define BLACK false
-#define RED true
 
 #include <fstream>
 #include <sstream>
 #include <iostream> 
+
+#define BLACK false
+#define RED true
 using namespace std;
 
 template class LLRBTree<int, int>;
@@ -16,6 +17,7 @@ LLRBTree<KeyT, ValueT>::LLRBTree()
 	m_leaf = new LLRBNode<KeyT, ValueT>( 0, 0 );
     m_leaf->m_left = m_leaf;
     m_leaf->m_right = m_leaf;
+    m_leaf->m_color = BLACK;
     m_root = m_leaf;
     m_count = 0;
 }
@@ -105,7 +107,7 @@ void LLRBTree<KeyT, ValueT>::drawHelper( int level, vector<vector<string> > & le
         }
     }
 
-    ss << "//node: " << *(node)->m_key << endl;
+    ss << "//node: " << *(node)->m_key << " RED: " << (node->m_color == RED? "true": "false") << endl;
 
     if(node->m_left != m_leaf)
     {
@@ -156,15 +158,12 @@ void LLRBTree<KeyT, ValueT>::createNode( KeyT key, ValueT value, LLRBNode<KeyT, 
 template<class KeyT, class ValueT>
 LLRBNode<KeyT, ValueT> *LLRBTree<KeyT, ValueT>::insertHelper( KeyT key, ValueT value, LLRBNode<KeyT, ValueT> *node )
 {
-		LLRBNode<KeyT, ValueT> newnode(key, value);
 	if ( node == m_leaf )
 	{
 		m_count += 1;
 		LLRBNode<KeyT, ValueT> *newnode = 0;
 		createNode( key, value, &newnode );
 		return newnode;
-
-
 	}
 	if ( isRed( node->m_left ) && isRed( node->m_right ) )
 	{
