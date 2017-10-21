@@ -47,7 +47,6 @@ void LLRBTree<KeyT, ValueT>::Delete( KeyT key )
 }
 
 
-
 // Find and return a value with given key
 template<class KeyT, class ValueT>
 ValueT * LLRBTree<KeyT, ValueT>::Search( KeyT key ) const

@@ -14,6 +14,7 @@
 /* #include <stdlib.h> */
 /* #include <stdio.h> */
 #include <sys/un.h>
+#include "socket.h"
 
 using namespace std;
 
@@ -24,86 +25,55 @@ int server_;
 string get_request(int client);
 bool send_response(int client, string response);
 void handle(int client);
-void initalize();
+Server * initalize();
 int serve();
 void setUpSignalHandler();
 void onExit(int);
 
-
 int main()
 {
 
-   LLRBTree<int,int> tree;
-
-   tree.Insert(33, 54);
-   tree.Insert(23, 45);
-   tree.Insert(113, 45);
-   tree.Insert(78, 45);
-   tree.Insert(7, 45);
-
-   tree.Insert(423, 425);
-   tree.Insert(1413, 45);
-   tree.Insert(478, 45);
-   tree.Insert(74, 45);
-
-   tree.Insert(4323, 45);
-   tree.Insert(1913, 41115);
-   tree.Insert(4278, 45);
-   tree.Insert(724, 45);
-
-   tree.Insert(3323, 45);
-   tree.Insert(9913, 45);
-   tree.Insert(2278, 45);
-   tree.Insert(2724, 45);
+  LLRBTree<int,int> tree;
 
    /* cout << "test " << *tree.Search(1913); */
- initalize();
- serve();
+ Server * server = initalize();
+ /* serve(); */
+ 
+ while(1)
+ {
+     while(server->Accept())
+     {
+         string command = server->Listen();
 
-   /* tree.Insert(1, 45); */
-   /* tree.Insert(2, 45); */
-   /* tree.Insert(3, 45); */
-   /* tree.Insert(4, 45); */
-   /* tree.Insert(5, 45); */
-   /* tree.Insert(6, 45); */
-   /* tree.Insert(7, 45); */
-   /* tree.Insert(10, 45); */
-   /* /1* 5c1e6fd6b6b0dbc1038dfe81193f4b3c *1/ */
+         if (command == "add")
+         {
+             /* tree.Insert(); */
+         }
+         else if (command == "search")
+         {
+             /* tree.Search(); */
+         }
+         else if (command == "delete")
+         {
+             /* tree.Delete(); */
+         }
+         else 
+         {
+             cerr << "invalid option"<< endl;
+             exit (33);
+         }
+
+     }
+ }
 
    tree.Draw();
 }
 
-void initalize() 
+Server* initalize() 
 {
     setUpSignalHandler();
-    struct sockaddr_un server_addr;
-
-    // setup socket address structure
-    bzero(&server_addr,sizeof(server_addr));
-    server_addr.sun_family = AF_UNIX;
-    strncpy(server_addr.sun_path,socket_name_,sizeof(server_addr.sun_path) - 1);
-
-    // create socket
-    server_ = socket(PF_UNIX,SOCK_STREAM,0);
-    if (!server_) 
-    {
-        perror("socket");
-        exit(-1);
-    }
-
-    // call bind to associate the socket with the UNIX file system
-    if (bind(server_,(const struct sockaddr *)&server_addr,sizeof(server_addr)) < 0) 
-    {
-        perror("bind");
-        exit(-1);
-    }
-
-      // convert the socket to listen for incoming connections
-    if (listen(server_,SOMAXCONN) < 0) 
-    {
-        perror("listen");
-        exit(-1);
-    }
+    Server * server = new Server(socket_name_);
+    return server;
 }
 
 int serve()
@@ -113,7 +83,7 @@ int serve()
     struct sockaddr_in client_addr;
     socklen_t clientlen = sizeof(client_addr);
 
-      // accept clients
+    // accept clients
     while ((client = accept(server_,(struct sockaddr *)&client_addr,&clientlen)) > 0) 
     {
         handle(client);
