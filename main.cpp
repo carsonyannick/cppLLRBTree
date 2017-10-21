@@ -43,23 +43,36 @@ int main()
  {
      while(server->Accept())
      {
-         string command = server->Listen();
+         Server::request request_;
+         server->Listen(request_);
+         char * command = request_.command;
+         int & arg = request_.argument;
 
-         if (command == "add")
+         /* if (strcmp(command,"add\n\n\n") == 0) */
+         if (strcmp("add   ",command) == 0)
          {
-             /* tree.Insert(); */
+             cout << "inside add if" << endl;
+             tree.Insert(arg, 11);
          }
-         else if (command == "search")
+         else if (strcmp(command,"search") == 0)
          {
+             cout << "inside search if" << endl;
              /* tree.Search(); */
          }
-         else if (command == "delete")
+         else if (strcmp(command,"delete") == 0)
          {
+             cout << "inside delete if" << endl;
              /* tree.Delete(); */
+         }
+         else if (strcmp(command,"draw  ") == 0)
+         {
+             cout << "inside draw if" << endl;
+             tree.Draw();
          }
          else 
          {
              cerr << "invalid option"<< endl;
+             onExit(0);
              exit (33);
          }
 
@@ -154,6 +167,7 @@ void setUpSignalHandler()
     sigemptyset(&sigIntHandler.sa_mask);
     sigIntHandler.sa_flags = 0;
     sigaction(SIGINT, &sigIntHandler, NULL);
+    /* sigaction(SIG_DFL, &sigIntHandler, NULL); */
 }
 
 
