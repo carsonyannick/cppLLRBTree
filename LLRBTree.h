@@ -7,9 +7,10 @@ class LLRBTree
 public:
     LLRBTree();
     void Insert( KeyT key, ValueT value );
-    void Delete( KeyT key );
+    bool Delete( KeyT key );
     ValueT * Search( KeyT key ) const;
-    void Draw() const;
+    void DrawToFile() const;
+    std::string Draw() const;
 private:
     void DeleteMin();
     bool isRed( LLRBNode<KeyT, ValueT> *node );
@@ -21,7 +22,7 @@ private:
     LLRBNode<KeyT, ValueT> * rotateRight	( LLRBNode<KeyT, ValueT> *node );
     LLRBNode<KeyT, ValueT> * moveRedLeft	( LLRBNode<KeyT, ValueT> *node );
     LLRBNode<KeyT, ValueT> * moveRedRight( LLRBNode<KeyT, ValueT> *node );
-    LLRBNode<KeyT, ValueT> * deleteHelper( KeyT key, LLRBNode<KeyT, ValueT> *node );
+    LLRBNode<KeyT, ValueT> * deleteHelper( KeyT key, LLRBNode<KeyT, ValueT> *node, bool & deleted );
     LLRBNode<KeyT, ValueT> * deleteMinHelper( LLRBNode<KeyT, ValueT> *node );
     LLRBNode<KeyT, ValueT> * getMinNode( LLRBNode<KeyT, ValueT> *node );
     LLRBNode<KeyT, ValueT> * fixUp( LLRBNode<KeyT, ValueT> *node );

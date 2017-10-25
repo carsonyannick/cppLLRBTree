@@ -40,10 +40,12 @@ void LLRBTree<KeyT, ValueT>::DeleteMin()
 
 // delete the node with a given key
 template<class KeyT, class ValueT>
-void LLRBTree<KeyT, ValueT>::Delete( KeyT key )
+bool LLRBTree<KeyT, ValueT>::Delete( KeyT key )
 {
-	m_root = deleteHelper( key, m_root );
+    bool deleted = false;
+	m_root = deleteHelper( key, m_root, deleted );
 	m_root->m_color = BLACK;
+    return deleted;
 }
 
 
@@ -72,7 +74,7 @@ ValueT * LLRBTree<KeyT, ValueT>::Search( KeyT key ) const
 
 
 template<class KeyT, class ValueT>
-void LLRBTree<KeyT, ValueT>::Draw() const
+void LLRBTree<KeyT, ValueT>::DrawToFile() const
 {
     vector<vector<string> > levels;
     drawHelper(1, levels, m_root);
@@ -87,6 +89,25 @@ void LLRBTree<KeyT, ValueT>::Draw() const
             output << levels[i][j];
         }
     }
+    output.close();
+}
+
+template<class KeyT, class ValueT>
+string LLRBTree<KeyT, ValueT>::Draw() const
+{
+    vector<vector<string> > levels;
+    drawHelper(1, levels, m_root);
+    string output;
+
+    for(int i =0; i< levels.size(); ++i)
+    {
+        for(int j =0; j < levels[i].size(); ++j)
+        {
+            cout << levels[i][j];
+            output += levels[i][j];
+        }
+    }
+    return output;
 }
 
 // PRIVATE: -----------------------------------------------------------------------------
@@ -262,7 +283,7 @@ LLRBNode<KeyT, ValueT> *LLRBTree<KeyT, ValueT>::moveRedRight( LLRBNode<KeyT, Val
 
 
 template<class KeyT, class ValueT>
-LLRBNode<KeyT, ValueT> *LLRBTree<KeyT, ValueT>::deleteHelper( KeyT key, LLRBNode<KeyT, ValueT> *node )
+LLRBNode<KeyT, ValueT> *LLRBTree<KeyT, ValueT>::deleteHelper( KeyT key, LLRBNode<KeyT, ValueT> *node, bool & deleted )
 {
 	if ( isLeaf( node ) )
 	{
@@ -278,7 +299,7 @@ LLRBNode<KeyT, ValueT> *LLRBTree<KeyT, ValueT>::deleteHelper( KeyT key, LLRBNode
 		{
 			node = moveRedLeft( node );
 		}
-		node->m_left = deleteHelper( key, node->m_left );
+		node->m_left = deleteHelper( key, node->m_left, deleted );
 	}
 	else
 	{
@@ -291,6 +312,7 @@ LLRBNode<KeyT, ValueT> *LLRBTree<KeyT, ValueT>::deleteHelper( KeyT key, LLRBNode
 		if ( key == *(node->m_key) && node->m_right == m_leaf )
 		{
 			delete node;
+            deleted = true;
 			--m_count;
 			return m_leaf;
 		}
@@ -311,7 +333,7 @@ LLRBNode<KeyT, ValueT> *LLRBTree<KeyT, ValueT>::deleteHelper( KeyT key, LLRBNode
 		}
 		else
 		{
-			node->m_right = deleteHelper( key, node->m_right );
+			node->m_right = deleteHelper( key, node->m_right, deleted );
 		}
 	}
 	return fixUp( node );
